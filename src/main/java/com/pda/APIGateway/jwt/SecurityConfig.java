@@ -41,7 +41,8 @@ public class SecurityConfig {
                                         ,"/api/core/users/signin"
                                         ,"/api/core/v3/api-docs"
                                         ,"/api/stock/v3/api-docs"
-                                ,"/api/core/users/join")
+                                ,"/api/core/users/join"
+                                ,"/api/core/test")
                                 .permitAll()
                         .pathMatchers("/api/**")
                         .authenticated()
