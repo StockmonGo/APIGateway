@@ -4,6 +4,7 @@ package com.pda.APIGateway.jwt;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -19,13 +20,6 @@ public class SecurityConfig {
     SecurityConfig(JWTUtil jwtUtil){
         this.jwtUtil = jwtUtil;
     }
-//
-//    //AuthenticationManager Bean 등록
-//    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-//
-//        return configuration.getAuthenticationManager();
-//    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -36,25 +30,24 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain filterChain(ServerHttpSecurity http) throws Exception{
 
-        http
-                .csrf((auth) -> auth.disable())
-                .formLogin((auth) -> auth.disable())
-                .httpBasic((auth) -> auth.disable())
-                .authorizeExchange(auth -> auth.pathMatchers("/api/**")
-                        .permitAll()
+        return http
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+                .authorizeExchange(auth ->
+                        auth
+                                .pathMatchers("", "/"
+                                        ,"/swagger-ui/index.html"
+                                        ,"/api/core/users/signin"
+                                        ,"/api/core/v3/api-docs"
+                                        ,"/api/stock/v3/api-docs"
+                                ,"/api/core/users/join")
+                                .permitAll()
+                        .pathMatchers("/api/**")
+                        .authenticated()
                         .anyExchange()
-                        .permitAll());
+                        .permitAll()).addFilterBefore(new JWTFilter(jwtUtil), SecurityWebFiltersOrder.AUTHORIZATION)
+                        .build();
 
-//        http
-//                .authorizeHttpRequests((auth) -> auth
-//                        .requestMatchers("/api/users/signin", "/api/users/join").permitAll()
-//                        .requestMatchers("/api/**").hasRole("USER")
-//                        .anyRequest().authenticated());
-
-
-//        http.addFilterBefore(new JWTFilter(jwtUtil),  UsernamePasswordAuthenticationFilter.class);
-
-
-        return http.build();
     }
 }
