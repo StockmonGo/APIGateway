@@ -39,7 +39,7 @@ public class JWTFilter implements WebFilter {
         JWTToken jwtToken = new JWTToken(id, role);
         Authentication authToken = new UsernamePasswordAuthenticationToken(jwtToken, null, List.of(new SimpleGrantedAuthority(role)));
 
-        exchange.getResponse().getHeaders().set("travelerId", String.valueOf(id));
+        exchange.getRequest().mutate().header("travelerId", String.valueOf(id)).build();
         return chain.filter(exchange)
                 .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authToken));
     }
