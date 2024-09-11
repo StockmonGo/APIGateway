@@ -55,6 +55,7 @@ public class SecurityConfig {
                                         "/api/stock/v3/api-docs",
                                         "/api/core/users/join",
                                         "/api/core/test",
+                                        "/api/core/maps/stockmons",
                                         "/api/stock/gs-guide-websocket")
                                 .permitAll()
                                 .pathMatchers("/api/**").authenticated()
